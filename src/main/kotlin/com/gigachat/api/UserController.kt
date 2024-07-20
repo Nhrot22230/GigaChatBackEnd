@@ -1,15 +1,12 @@
 package com.gigachat.api
 
+import com.gigachat.dto.LoginRequest
 import com.gigachat.interfaces.IUserMapper
 import com.gigachat.mappers.UserMapper
 import com.gigachat.model.User
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/giga-chat/users")
@@ -45,10 +42,19 @@ class UserController {
     }
   }
 
-  @GetMapping("/login")
+  @PostMapping("/login")
   @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
-  fun login(@RequestParam(required = true, defaultValue = "") nickname: String, @RequestParam(required = true, defaultValue = "") passwd: String): ResponseEntity<User> {
+  fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity<User> {
+    val nickname = loginRequest.nickname
+    val passwd = loginRequest.password
 
-    return ResponseEntity(null, HttpStatus.NOT_FOUND)
+    val user = dbReader.login(nickname, passwd)
+
+    return if (user != null) {
+      ResponseEntity(user, HttpStatus.OK)
+    }
+    else {
+      ResponseEntity(null, HttpStatus.NOT_FOUND)
+    }
   }
 }
