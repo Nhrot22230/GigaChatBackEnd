@@ -1,1 +1,1 @@
-rootProject.name = "service"
+rootProject.name = "giga-chat-api"
